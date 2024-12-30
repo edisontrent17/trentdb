@@ -1,4 +1,5 @@
 package com.migsoftware.trentdb.parser;
 
-public class QueryNoWith extends Node{
+public enum StatementType {
+  SELECT;
 }
