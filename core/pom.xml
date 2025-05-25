@@ -12,16 +12,10 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <antlr.version>4.3</antlr.version>
+        <antlr.version>4.13.2</antlr.version>
     </properties>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.apache.calcite/calcite-core -->
-        <dependency>
-            <groupId>org.apache.calcite</groupId>
-            <artifactId>calcite-core</artifactId>
-            <version>1.38.0</version>
-        </dependency>
 
         <dependency>
             <groupId>org.antlr</groupId>
@@ -32,7 +26,7 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-annotations</artifactId>
-            <version>${antlr.version}</version>
+            <version>4.3</version>
         </dependency>
     </dependencies>
 
@@ -52,6 +46,7 @@
                 </executions>
                 <configuration>
                     <visitor>true</visitor>
+
                 </configuration>
             </plugin>
             <plugin>

@@ -4,5 +4,6 @@ public enum LogicalOperatorType {
   PROJECTION,
   //Data Sources
   TABLE_SCAN,
+  SHOW_CATALOGS;
 
 }

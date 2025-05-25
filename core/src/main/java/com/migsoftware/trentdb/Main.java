@@ -23,7 +23,10 @@ public class Main {
     SqlBaseParser parser = new SqlBaseParser(tokenStream);
     ParserRuleContext tree = parser.singleStatement();
 
+    System.out.println(tree);
     Node parsedQuery = new AstBuilder().visit(tree);
+
+    System.out.println("ParsedQuery " + parsedQuery);
 
     LogicalOperator logicalOperator = new LogicalPlanner().createPlan(parsedQuery);
 

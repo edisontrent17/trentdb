@@ -1,12 +1,17 @@
 package com.migsoftware.trentdb.execution;
 
+import com.migsoftware.trentdb.data.DataChunk;
 import java.util.List;
 
 public interface PhysicalOperator {
 
-    OperatorType operatorType();
+  DataChunk getData();
 
-    List<Type> types();
+  boolean done();
 
-    PhysicalOperatorState currentState();
+  OperatorType operatorType();
+
+  List<Type> types();
+
+  PhysicalOperatorState currentState();
 }

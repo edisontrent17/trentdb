@@ -1,3 +1,4 @@
+/*
 package com.migsoftware.trentdb.parser;
 
 import org.apache.calcite.sql.SqlCall;
@@ -53,3 +54,4 @@ public class CalciteVisitor implements SqlVisitor {
         return SqlVisitor.super.visitNode(n);
     }
 }
+*/

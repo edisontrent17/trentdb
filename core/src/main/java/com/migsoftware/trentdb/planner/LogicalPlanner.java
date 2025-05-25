@@ -3,20 +3,22 @@ package com.migsoftware.trentdb.planner;
 
 import com.migsoftware.trentdb.parser.Node;
 import com.migsoftware.trentdb.parser.Query;
+import com.migsoftware.trentdb.parser.ShowCatalogs;
 import com.migsoftware.trentdb.parser.Statement;
+import com.migsoftware.trentdb.parser.StatementType;
+import java.util.Objects;
 
 public class LogicalPlanner {
 
   public LogicalOperator createPlan(Node node) {
-    if (node instanceof Statement) {
-      Statement statement = (Statement) node;
-      switch (statement.getType()) {
-        case SELECT -> {
-          return new SelectPlanner().createPlan((Query) statement);
-        }
-        default -> throw new UnsupportedOperationException("Unknown statement type");
+    if (node instanceof Statement statement) {
+      if (Objects.requireNonNull(statement.getType()) == StatementType.SELECT) {
+        return new SelectPlanner().createPlan((Query) statement);
       }
+      throw new UnsupportedOperationException("Unknown statement type");
+    } else if (node instanceof ShowCatalogs) {
+      return new ShowCatalogsOperator();
     }
-    return new LogicalOperator();
+    throw new UnsupportedOperationException("Not Supported");
   }
 }
