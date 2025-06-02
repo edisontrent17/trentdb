@@ -1,4 +1,8 @@
 package com.migsoftware.trentdb.data;
 
-public class Value {
+public interface Value {
+
+  Object data();
+
+  String string();
 }

@@ -9,6 +9,10 @@ public class LogicalType {
     this.type = type;
   }
 
+  public static LogicalType of(LogicalTypeId typeId) {
+    return new LogicalType(typeId);
+  }
+
   public LogicalTypeId typeId() {
     return this.type;
   }

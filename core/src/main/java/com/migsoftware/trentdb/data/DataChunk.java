@@ -9,7 +9,9 @@ public interface DataChunk {
 
   List<LogicalType> getTypes();
 
-  long capacity();
+  int capacity();
 
   void setValue(int colIdx, int index, Value value);
+
+  void print();
 }
