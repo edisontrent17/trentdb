@@ -1,5 +1,7 @@
 package com.migsoftware.trentdb.parser.postgresql;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.io.CharStreams;
 import com.migsoftware.trentdb.data.DataChunk;
 import com.migsoftware.trentdb.execution.PhysicalOperator;
 import com.migsoftware.trentdb.parser.Node;
@@ -7,6 +9,7 @@ import com.migsoftware.trentdb.parser.PostgreSQLLexer;
 import com.migsoftware.trentdb.parser.PostgreSQLLexerBase;
 import com.migsoftware.trentdb.parser.PostgreSQLParser;
 import com.migsoftware.trentdb.parser.PostgreSQLParserBaseVisitor;
+import com.migsoftware.trentdb.parser.QuotedIdentifier;
 import com.migsoftware.trentdb.parser.ShowCatalogs;
 import com.migsoftware.trentdb.planner.LogicalOperator;
 import com.migsoftware.trentdb.planner.LogicalPlanner;
@@ -65,13 +68,20 @@ public class PgAst extends PostgreSQLParserBaseVisitor<Node> {
 
   @Override
   public Node visitSelect_clause(PostgreSQLParser.Select_clauseContext ctx) {
-    ctx.simple_select_intersect();
-    return super.visitSelect_clause(ctx);
+    if (ctx.UNION() != null || ctx.EXCEPT() != null) {
+      throw new UnsupportedOperationException("Neither Union nor Except is supported");
+    }
+    assert ctx.simple_select_intersect().size() == 1;
+    Node node = visit(ctx.simple_select_intersect(0));
+    return node;
   }
 
   @Override
   public Node visitSimple_select_intersect(PostgreSQLParser.Simple_select_intersectContext ctx) {
-    ctx.simple_select_pramary();
+    if (ctx.INTERSECT() != null) {
+      throw new UnsupportedOperationException("Intersect Is not Supported");
+    }
+
     return super.visitSimple_select_intersect(ctx);
   }
 
@@ -101,8 +111,15 @@ public class PgAst extends PostgreSQLParserBaseVisitor<Node> {
 
   @Override
   public Node visitColid(PostgreSQLParser.ColidContext ctx) {
-    ctx.identifier().Identifier().toString();
     return super.visitColid(ctx);
+  }
+
+  @Override
+  public Node visitIdentifier(PostgreSQLParser.IdentifierContext ctx) {
+    if (ctx.QuotedIdentifier() != null) {
+      return new QuotedIdentifier(CharMatcher.is('\"').trimFrom(ctx.QuotedIdentifier().toString()));
+    }
+    return super.visitIdentifier(ctx);
   }
 
   @Override
@@ -110,6 +127,7 @@ public class PgAst extends PostgreSQLParserBaseVisitor<Node> {
     ctx.colid();
     return super.visitQualified_name(ctx);
   }
+
 
   @Override
   public Node visitSelect_no_parens(PostgreSQLParser.Select_no_parensContext ctx) {
@@ -121,13 +139,13 @@ public class PgAst extends PostgreSQLParserBaseVisitor<Node> {
     if (withCtx != null) {
       throw new UnsupportedOperationException("Common table expressions are not supported yet");
     }
-    ctx.select_clause();
+    Node selectClause = visit(ctx.select_clause());
 
-    return super.visitSelect_no_parens(ctx);
+    return selectClause;
   }
 
   public static void main(String[] args) {
-    String sql = "select * from test";
+    String sql = "select * from \"test.csv\"";
     PostgreSQLLexerBase lexer = new PostgreSQLLexer(new ANTLRInputStream(sql));
     CommonTokenStream tokenStream = new CommonTokenStream(lexer);
     PostgreSQLParser parser = new PostgreSQLParser(tokenStream);
